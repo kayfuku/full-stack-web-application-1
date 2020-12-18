@@ -33,6 +33,20 @@ class Venue(db.Model):
   genres = db.Column(ARRAY(String))
   show = db.relationship('Show', backref=db.backref('venue', lazy=True))
 
+  def __init__(self, name, city, state, address, phone, image_link, facebook_link, website, genres, 
+                 seeking_talent=False, description=''):
+        self.name = name
+        self.city = city
+        self.state = state
+        self.address = address
+        self.phone = phone
+        self.image_link = image_link
+        self.facebook_link = facebook_link
+        self.description = description
+        self.website = website
+        self.genres = genres
+
+
   
 class Artist(db.Model):
   __tablename__ = 'Artist'
@@ -52,6 +66,18 @@ class Artist(db.Model):
   website = db.Column(String(120))
   show = db.relationship('Show', backref=db.backref('artist', lazy=True))
 
+  def __init__(self, name, city, state, phone, genres, image_link, facebook_link, website, 
+                 seeking_venue=False, seeking_description=""):
+    self.name = name
+    self.city = city
+    self.state = state
+    self.phone = phone
+    self.genres = genres
+    self.image_link = image_link
+    self.facebook_link = facebook_link
+    self.seeking_description = seeking_description
+    self.website = website
+
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
@@ -61,6 +87,9 @@ class Show(db.Model):
   venue_id = db.Column(Integer, ForeignKey(Venue.id), nullable=False)
   artist_id = db.Column(Integer, ForeignKey(Artist.id), nullable=False)
   start_time = db.Column(String(), nullable=False)
+
+  def __init__(self, start_time):
+    self.start_time = start_time
 
 
 

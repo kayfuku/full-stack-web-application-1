@@ -22,7 +22,7 @@ app = Flask(__name__)
 moment = Moment(app)
 
 # TODO: connect to a local postgresql database
-db_setup(app)
+db = db_setup(app)
 
 
 #----------------------------------------------------------------------------#
@@ -55,28 +55,58 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+  # data=[{
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "venues": [{
+  #     "id": 1,
+  #     "name": "The Musical Hop",
+  #     "num_upcoming_shows": 0,
+  #   }, {
+  #     "id": 3,
+  #     "name": "Park Square Live Music & Coffee",
+  #     "num_upcoming_shows": 1,
+  #   }]
+  # }, {
+  #   "city": "New York",
+  #   "state": "NY",
+  #   "venues": [{
+  #     "id": 2,
+  #     "name": "The Dueling Pianos Bar",
+  #     "num_upcoming_shows": 0,
+  #   }]
+  # }]
+
+  data = []
+  current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
+  # This is like a view. 
+  upcoming_shows_rows = Show.query.filter(Show.start_time > current_time)
+
+  areas = Venue.query.distinct(Venue.city, Venue.state).all()
+  for area in areas:
+    city_state = dict()
+    city_state['city'] = area.city
+    city_state['state'] = area.state
+    
+    city_state['venues'] = []
+    venues = Venue.query.filter_by(city=area.city, state=area.state).all()
+    for venue in venues:
+      venue_dict = dict()
+      venue_dict['id'] = venue.id
+      venue_dict['name'] = venue.name
+
+      # We can query for the view. 
+      num_upcoming_shows = upcoming_shows_rows \
+        .filter(Show.venue_id == venue.id) \
+        .count()
+      venue_dict['num_upcoming_shows'] = num_upcoming_shows
+
+      city_state['venues'].append(venue_dict)
+    
+    data.append(city_state)
+
+  return render_template('pages/venues.html', areas=data)
+
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
