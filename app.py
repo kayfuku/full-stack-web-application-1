@@ -96,7 +96,7 @@ def venues():
       venue_dict['id'] = venue.id
       venue_dict['name'] = venue.name
 
-      # We can query for the view. 
+      # We can query on the view. 
       num_upcoming_shows = upcoming_shows_rows \
         .filter(Show.venue_id == venue.id) \
         .count()
@@ -285,16 +285,26 @@ def delete_venue(venue_id):
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+
+  # data=[{
+  #   "id": 4,
+  #   "name": "Guns N Petals",
+  # }, {
+  #   "id": 5,
+  #   "name": "Matt Quevedo",
+  # }, {
+  #   "id": 6,
+  #   "name": "The Wild Sax Band",
+  # }]
+
+  data = []
+  artists = Artist.query.all()
+  for artist in artists:
+    data.append({
+      "id": artist.id, 
+      "name": artist.name
+    })
+
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
