@@ -125,8 +125,7 @@ def search_venues():
   # }
 
   search_term = request.form.get('search_term', None)
-  venues = Venue.query.filter(
-    Venue.name.ilike("%{}%".format(search_term))).all()
+  venues = Venue.query.filter(Venue.name.ilike("%{}%".format(search_term))).all()
   upcoming_shows_rows = Show.query.filter(Show.start_time > datetime.datetime.now())
   
   response = dict()
@@ -328,13 +327,16 @@ def search_artists():
   # }
 
   search_term = request.form.get('search_term', None)
-  artists = Artist.query.filter(
-    Artist.name.ilike("%{}%".format(search_term))).all()
-  count_artists = len(artists)
-  response = {
-    "count": count_artists, 
-    "data": [a.serialize for a in artists]
-  }
+  artists = Artist.query.filter(Artist.name.ilike("%{}%".format(search_term))).all()
+  upcoming_shows_rows = Show.query.filter(Show.start_time > datetime.datetime.now())
+  
+  response = dict()
+  response['data'] = []
+  for a in artists:
+    a_dict = a.serialize
+    response['count'] = len(artists)
+    a_dict['num_upcoming_shows'] = upcoming_shows_rows.filter(Show.artist_id == a.id).count()
+    response['data'].append(a_dict)
 
   return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
 
