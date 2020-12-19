@@ -127,11 +127,15 @@ def search_venues():
   search_term = request.form.get('search_term', None)
   venues = Venue.query.filter(
     Venue.name.ilike("%{}%".format(search_term))).all()
-  count_venues = len(venues)
-  response = {
-    "count": count_venues, 
-    "data": [v.serialize for v in venues]
-  }
+  upcoming_shows_rows = Show.query.filter(Show.start_time > datetime.datetime.now())
+  
+  response = dict()
+  response['data'] = []
+  for v in venues:
+    v_dict = v.serialize
+    response['count'] = len(venues)
+    v_dict['num_upcoming_shows'] = upcoming_shows_rows.filter(Show.venue_id == v.id).count()
+    response['data'].append(v_dict)
 
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
