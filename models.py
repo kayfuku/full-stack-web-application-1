@@ -28,25 +28,40 @@ class Venue(db.Model):
 
   # TODO: implement any missing fields, as a database migration using Flask-Migrate
   seeking_talent = db.Column(Boolean, default=False)
-  description = db.Column(String(500), default='')
+  seeking_description = db.Column(String(500), default='')
   website = db.Column(String(120))
   genres = db.Column(ARRAY(String))
   show = db.relationship('Show', backref=db.backref('venue', lazy=True))
 
   def __init__(self, name, city, state, address, phone, image_link, facebook_link, website, genres, 
-                 seeking_talent=False, description=''):
-        self.name = name
-        self.city = city
-        self.state = state
-        self.address = address
-        self.phone = phone
-        self.image_link = image_link
-        self.facebook_link = facebook_link
-        self.description = description
-        self.website = website
-        self.genres = genres
-
-
+                 seeking_talent=False, seeking_description=''):
+    self.name = name
+    self.city = city
+    self.state = state
+    self.address = address
+    self.phone = phone
+    self.image_link = image_link
+    self.facebook_link = facebook_link
+    self.seeking_description = seeking_description
+    self.website = website
+    self.genres = genres
+  
+  @property
+  def serialize(self):
+    return {'id': self.id,
+            'name': self.name,
+            'city': self.city,
+            'state': self.state,
+            'address': self.address,
+            'phone': self.phone,
+            'image_link': self.image_link,
+            'facebook_link': self.facebook_link,
+            'seeking_talent': self.seeking_talent,
+            'seeking_description': self.seeking_description, 
+            'website': self.website,
+            'genres': self.genres
+            }
+    
   
 class Artist(db.Model):
   __tablename__ = 'Artist'
