@@ -107,7 +107,7 @@ class Artist(db.Model):
             'city': self.city,
             'state': self.state,
             'phone': self.phone,
-            'genres': self.genres,
+            'genres': self.genres.split(','),
             'image_link': self.image_link,
             'facebook_link': self.facebook_link,
             'seeking_description': self.seeking_description,
