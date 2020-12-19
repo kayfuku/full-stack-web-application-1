@@ -46,6 +46,9 @@ class Venue(db.Model):
     self.seeking_description = seeking_description
     self.website = website
     self.genres = genres
+
+  def __repr__(self):
+    return '<Venue %r>' % self
   
   @property
   def serialize(self):
@@ -94,6 +97,9 @@ class Artist(db.Model):
     self.seeking_description = seeking_description
     self.website = website
 
+  def __repr__(self):
+    return '<Artist %r>' % self
+
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
@@ -106,6 +112,9 @@ class Show(db.Model):
 
   def __init__(self, start_time):
     self.start_time = start_time
+
+  def __repr__(self):
+    return '<Show %r>' % self
 
 
 
