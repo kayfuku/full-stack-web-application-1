@@ -100,6 +100,19 @@ class Artist(db.Model):
   def __repr__(self):
     return '<Artist %r>' % self
 
+  @property
+  def serialize(self):
+    return {'id': self.id,
+            'name': self.name,
+            'city': self.city,
+            'state': self.state,
+            'phone': self.phone,
+            'genres': self.genres,
+            'image_link': self.image_link,
+            'facebook_link': self.facebook_link,
+            'seeking_description': self.seeking_description,
+            }
+
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
