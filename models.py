@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ARRAY, ForeignKey
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import datetime
 
 db = SQLAlchemy()
 

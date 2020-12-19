@@ -80,9 +80,8 @@ def venues():
   # }]
 
   data = []
-  current_time = datetime.now().strftime('%Y-%m-%d %H:%S:%M')
   # This is like a view. 
-  upcoming_shows_rows = Show.query.filter(Show.start_time > current_time)
+  upcoming_shows_rows = Show.query.filter(Show.start_time > datetime.datetime.now())
 
   areas = Venue.query.distinct(Venue.city, Venue.state).all()
   for area in areas:
@@ -220,18 +219,28 @@ def show_venue(venue_id):
   # data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
 
   venue = Venue.query.filter(Venue.id == venue_id).one_or_none()
+  data = venue.serialize
 
+  # past_shows
   past_shows = Show.query.filter(
     Show.start_time <= datetime.datetime.now(), Show.venue_id == venue_id).all()
+  data['past_shows'] = []
+  for ps in past_shows:
+    a = Artist.query.get(ps.artist_id)
+    data['past_shows'].append({
+      "artist_id": a.id, 
+      "artist_name": a.name, 
+      "artist_image_link": a.image_link, 
+      "start_time": ps.start_time.strftime("%m/%d/%Y, %H:%M:%S"),
+    })
+  data['past_shows_count'] = len(past_shows)
 
   
-  venue['past_shows'] = {
-    "artist_id": past_shows
-  }
 
 
 
-  return render_template('pages/show_venue.html', venue=venue)
+
+  return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
 #  ----------------------------------------------------------------
