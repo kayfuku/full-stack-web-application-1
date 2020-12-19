@@ -235,10 +235,19 @@ def show_venue(venue_id):
     })
   data['past_shows_count'] = len(past_shows)
 
-  
-
-
-
+  # upcoming_shows
+  upcoming_shows = Show.query.filter(
+    Show.start_time > datetime.datetime.now(), Show.venue_id == venue_id).all()
+  data['upcoming_shows'] = []
+  for us in upcoming_shows:
+    a = Artist.query.get(us.artist_id)
+    data['upcoming_shows'].append({
+      "artist_id": a.id, 
+      "artist_name": a.name, 
+      "artist_image_link": a.image_link, 
+      "start_time": us.start_time.strftime("%m/%d/%Y, %H:%M:%S"),
+    })
+  data['upcoming_shows_count'] = len(upcoming_shows)
 
   return render_template('pages/show_venue.html', venue=data)
 
