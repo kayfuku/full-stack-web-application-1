@@ -131,7 +131,7 @@ def search_venues():
   response = dict()
   response['data'] = []
   for v in venues:
-    v_dict = v.serialize
+    v_dict = v.get_dict
     response['count'] = len(venues)
     v_dict['num_upcoming_shows'] = upcoming_shows_rows.filter(Show.venue_id == v.id).count()
     response['data'].append(v_dict)
@@ -223,7 +223,7 @@ def show_venue(venue_id):
   # data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
 
   venue = Venue.query.filter(Venue.id == venue_id).one_or_none()
-  data = venue.serialize
+  data = venue.get_dict
 
   # past_shows
   past_shows = Show.query.filter(
@@ -333,7 +333,7 @@ def search_artists():
   response = dict()
   response['data'] = []
   for a in artists:
-    a_dict = a.serialize
+    a_dict = a.get_dict
     response['count'] = len(artists)
     a_dict['num_upcoming_shows'] = upcoming_shows_rows.filter(Show.artist_id == a.id).count()
     response['data'].append(a_dict)
@@ -419,7 +419,7 @@ def show_artist(artist_id):
   # data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
 
   artist = Artist.query.filter(Artist.id == artist_id).one_or_none()
-  data = artist.serialize
+  data = artist.get_dict
 
   # past_shows
   past_shows = Show.query.filter(
@@ -534,6 +534,7 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+  
   data=[{
     "venue_id": 1,
     "venue_name": "The Musical Hop",

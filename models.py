@@ -51,7 +51,7 @@ class Venue(db.Model):
     return '<Venue %r>' % self
   
   @property
-  def serialize(self):
+  def get_dict(self):
     return {'id': self.id,
             'name': self.name,
             'city': self.city,
@@ -101,7 +101,7 @@ class Artist(db.Model):
     return '<Artist %r>' % self
 
   @property
-  def serialize(self):
+  def get_dict(self):
     return {'id': self.id,
             'name': self.name,
             'city': self.city,
