@@ -130,6 +130,14 @@ class Show(db.Model):
   def __repr__(self):
     return '<Show %r>' % self
 
+  @property
+  def get_dict(self):
+    return {'id': self.id,
+            'venue_id': self.venue_id,
+            'artist_id': self.artist_id,
+            'start_time': self.start_time.strftime("%m/%d/%Y, %H:%M:%S")
+            }
+
 
 
 
