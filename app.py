@@ -298,6 +298,9 @@ def create_venue_submission():
     db.session.rollback()
     traceback.print_exc()
 
+  finally:
+    db.session.close()
+
   return render_template('pages/home.html')
 
 
