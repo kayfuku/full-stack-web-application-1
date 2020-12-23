@@ -34,8 +34,8 @@ class Venue(db.Model):
   genres = db.Column(ARRAY(String))
   show = db.relationship('Show', backref=db.backref('venue', lazy=True))
 
-  def __init__(self, name, city, state, address, phone, image_link, facebook_link, website, genres, 
-                 seeking_talent=False, seeking_description=''):
+  def __init__(self, name, city, state, address, phone, facebook_link, genres, 
+                 image_link='', website='', seeking_talent=False, seeking_description=''):
     self.name = name
     self.city = city
     self.state = state

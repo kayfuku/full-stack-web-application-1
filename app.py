@@ -13,6 +13,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 import datetime
+import traceback
 
 
 #----------------------------------------------------------------------------#
@@ -138,6 +139,7 @@ def search_venues():
 
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
+
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
@@ -255,6 +257,7 @@ def show_venue(venue_id):
 
   return render_template('pages/show_venue.html', venue=data)
 
+
 #  Create Venue
 #  ----------------------------------------------------------------
 
@@ -263,17 +266,40 @@ def create_venue_form():
   form = VenueForm()
   return render_template('forms/new_venue.html', form=form)
 
+
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
+  try:
+    new_venue = Venue(
+      name=request.form['name'], 
+      city=request.form['city'], 
+      state=request.form['state'], 
+      address=request.form['address'], 
+      phone=request.form['phone'], 
+      # image_link=request.form['image_link'], 
+      facebook_link=request.form['facebook_link'], 
+      # seeking_talent=request.form['seeking_talent'], 
+      # seeking_description=request.form['seeking_description'], 
+      # website=request.form['website'], 
+      genres=request.form.getlist('genres')
+    )
+    db.session.add(new_venue)
+    db.session.commit()
+    # on successful db insert, flash success
+    flash('Venue ' + request.form['name'] + ' was successfully listed!')
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+  except Exception as ex:
+    # TODO: on unsuccessful db insert, flash an error instead.
+    # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
+    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+    db.session.rollback()
+    traceback.print_exc()
+
   return render_template('pages/home.html')
+
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
@@ -283,6 +309,7 @@ def delete_venue(venue_id):
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
   return None
+
 
 #  Artists
 #  ----------------------------------------------------------------
