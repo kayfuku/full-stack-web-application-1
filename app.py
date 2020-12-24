@@ -584,8 +584,14 @@ def create_artist_submission():
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
 
+  # print('image_link:', request.form['image_link'])
+  # print('seeking_venue:', request.form['seeking_venue'])
+
   try:
-    seeking_venue = request.form['seeking_venue'] == 'y'
+    seeking_venue = False
+    if 'seeking_venue' in request.form:
+      seeking_venue = request.form['seeking_venue'] == 'y'
+
     new_artist = Artist(
       name=request.form['name'], 
       city=request.form['city'], 
