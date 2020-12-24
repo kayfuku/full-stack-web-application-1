@@ -126,7 +126,9 @@ class Show(db.Model):
   artist_id = db.Column(Integer, ForeignKey(Artist.id), nullable=False)
   start_time = db.Column(DateTime)
 
-  def __init__(self, start_time):
+  def __init__(self, venue_id, artist_id, start_time):
+    self.venue_id = venue_id
+    self.artist_id = artist_id
     self.start_time = start_time
 
   def __repr__(self):
