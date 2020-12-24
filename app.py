@@ -346,6 +346,7 @@ def delete_venue(venue_id):
 
 #  Artists
 #  ----------------------------------------------------------------
+
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
@@ -370,6 +371,7 @@ def artists():
     })
 
   return render_template('pages/artists.html', artists=data)
+
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
@@ -399,6 +401,7 @@ def search_artists():
     response['data'].append(a_dict)
 
   return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
+
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
@@ -511,8 +514,10 @@ def show_artist(artist_id):
 
   return render_template('pages/show_artist.html', artist=data)
 
+
 #  Update
 #  ----------------------------------------------------------------
+
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
@@ -602,7 +607,7 @@ def create_artist_submission():
       seeking_venue=seeking_venue, 
       seeking_description=request.form['seeking_description'], 
       website=request.form['website'], 
-      genres=request.form.getlist('genres')
+      genres=','.join(request.form.getlist('genres'))
     )
     db.session.add(new_artist)
     db.session.commit()
