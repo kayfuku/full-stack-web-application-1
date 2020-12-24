@@ -94,6 +94,7 @@ class Artist(db.Model):
     self.genres = genres
     self.image_link = image_link
     self.facebook_link = facebook_link
+    self.seeking_venue = seeking_venue
     self.seeking_description = seeking_description
     self.website = website
 
@@ -110,6 +111,7 @@ class Artist(db.Model):
             'genres': self.genres.split(','),
             'image_link': self.image_link,
             'facebook_link': self.facebook_link,
+            'seeking_venue': self.seeking_venue, 
             'seeking_description': self.seeking_description,
             'website': self.website
             }
