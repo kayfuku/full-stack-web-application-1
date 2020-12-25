@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, request, Response, abort, flash, redirect, url_for, jsonify
 from flask_moment import Moment
 from models import db_setup, Venue, Artist, Show
 import logging
@@ -521,20 +521,29 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
-  artist={
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
-    "seeking_venue": True,
-    "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
+
+  # artist={
+  #   "id": 4,
+  #   "name": "Guns N Petals",
+  #   "genres": ["Rock n Roll"],
+  #   "city": "San Francisco",
+  #   "state": "CA",
+  #   "phone": "326-123-5000",
+  #   "website": "https://www.gunsnpetalsband.com",
+  #   "facebook_link": "https://www.facebook.com/GunsNPetals",
+  #   "seeking_venue": True,
+  #   "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
+  #   "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
+  # }
+
   # TODO: populate form with fields from artist with ID <artist_id>
+  artist_to_update = Artist.query.get(artist_id)
+  if artist_to_update is None:
+    abort(404)
+
+  artist = artist_to_update.get_dict
+  form = ArtistForm(data=artist)
+
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 
@@ -542,6 +551,43 @@ def edit_artist(artist_id):
 def edit_artist_submission(artist_id):
   # TODO: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
+
+  print('id: {}, genres: {}'.format(artist_id, ','.join(request.form.getlist('genres'))))
+  if 'seeking_venue' in request.form:
+    print('seeking_venue: {}'.format(request.form['seeking_venue']))
+
+  try:
+    seeking_venue = False
+    if 'seeking_venue' in request.form:
+      seeking_venue = request.form['seeking_venue'] == 'y'
+
+    print(type(seeking_venue))
+
+    new_artist = Artist.query.get(artist_id)
+
+    new_artist.name=request.form['name']
+    new_artist.city=request.form['city']
+    new_artist.state=request.form['state'] 
+    new_artist.phone=request.form['phone']
+    new_artist.image_link=request.form['image_link']
+    new_artist.facebook_link=request.form['facebook_link']
+    new_artist.seeking_venue=seeking_venue
+    new_artist.seeking_description=request.form['seeking_description']
+    new_artist.website=request.form['website']
+    new_artist.genres=','.join(request.form.getlist('genres'))
+    
+    db.session.commit()
+    flash('Artist ' + request.form['name'] + ' was successfully edited!')
+    print('Artist ' + request.form['name'] + ' was successfully edited!')
+
+  except Exception as ex:
+    flash('An error occurred. Artist ' + request.form['name'] + ' could not be edited.')
+    print('An error occurred. Artist ' + request.form['name'] + ' could not be edited.')
+    db.session.rollback()
+    traceback.print_exc()
+
+  finally:
+    db.session.close()
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
