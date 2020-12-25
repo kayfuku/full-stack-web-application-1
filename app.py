@@ -279,11 +279,11 @@ def create_venue_submission():
       state=request.form['state'], 
       address=request.form['address'], 
       phone=request.form['phone'], 
-      # image_link=request.form['image_link'], 
+      image_link=request.form['image_link'], 
       facebook_link=request.form['facebook_link'], 
-      # seeking_talent=request.form['seeking_talent'], 
-      # seeking_description=request.form['seeking_description'], 
-      # website=request.form['website'], 
+      seeking_talent=request.form['seeking_talent'], 
+      seeking_description=request.form['seeking_description'], 
+      website=request.form['website'], 
       genres=request.form.getlist('genres')
     )
     db.session.add(new_venue)
@@ -626,6 +626,38 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
   # TODO: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
+
+  try:
+    seeking_talent = False
+    if 'seeking_talent' in request.form:
+      seeking_talent = request.form['seeking_talent'] == 'y'
+
+    new_venue = Venue.query.get(venue_id)
+
+    new_venue.name=request.form['name']
+    new_venue.city=request.form['city']
+    new_venue.state=request.form['state'] 
+    new_venue.phone=request.form['phone']
+    new_venue.image_link=request.form['image_link']
+    new_venue.facebook_link=request.form['facebook_link']
+    new_venue.seeking_talent=seeking_talent
+    new_venue.seeking_description=request.form['seeking_description']
+    new_venue.website=request.form['website']
+    new_venue.genres=request.form.getlist('genres')
+    
+    db.session.commit()
+    flash('Venue ' + request.form['name'] + ' was successfully edited!')
+    print('Venue ' + request.form['name'] + ' was successfully edited!')
+
+  except Exception as ex:
+    flash('An error occurred. Venue ' + request.form['name'] + ' could not be edited.')
+    print('An error occurred. Venue ' + request.form['name'] + ' could not be edited.')
+    db.session.rollback()
+    traceback.print_exc()
+
+  finally:
+    db.session.close()
+
   return redirect(url_for('show_venue', venue_id=venue_id))
 
 

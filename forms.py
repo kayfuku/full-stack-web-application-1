@@ -114,6 +114,18 @@ class VenueForm(Form):
             ('Other', 'Other'),
         ]
     )
+    seeking_talent = BooleanField(
+        'seeking_talent'
+    )
+    seeking_description = StringField(
+        'seeking_description', validators=[Length(max=500)]
+    )
+    website = StringField(
+        'website', validators=[DataRequired(), URL(), Length(max=120)]
+    )
+    image_link = StringField(
+        'image_link', validators=[DataRequired(), URL(), Length(max=500)]
+    )
     facebook_link = StringField(
         'facebook_link', validators=[URL()]
     )
